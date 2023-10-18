@@ -7,10 +7,11 @@ from cvxpy import SolverError
 from datasail.cluster.clustering import reverse_clustering, cluster_interactions, reverse_interaction_clustering
 from datasail.reader.utils import DataSet, DictMap
 from datasail.settings import LOGGER, MODE_F, TEC_R, TEC_ICS, TEC_CCS, TEC_ICD, TEC_CCD, MMSEQS, CDHIT, MMSEQS2
-from datasail.solver.blp.id_cold_single import solve_ics_blp as solve_ics_bqp
-from datasail.solver.blp.id_cold_double import solve_icd_blp as solve_icd_bqp
-from datasail.solver.blp.cluster_cold_single import solve_ccs_blp as solve_ccs_bqp
-from datasail.solver.blp.cluster_cold_double import solve_ccd_blp as solve_ccd_bqp
+from datasail.solver.blp.id_cold_single import solve_ics_blp
+from datasail.solver.blp.id_cold_double import solve_icd_blp
+from datasail.solver.blp.cluster_cold_single import solve_ccs_blp
+from datasail.solver.blp.cluster_cold_double import solve_ccd_blp
+from datasail.solver.bqp.id_cold_single import solve_ics_bqp
 from datasail.solver.utils import sample_categorical
 
 
@@ -97,7 +98,7 @@ def run_solver(
                         names = dataset.names
                         weights = [dataset.weights.get(x, 0) for x in dataset.names]
 
-                    solution = solve_ics_bqp(
+                    solution = solve_ics_blp(
                         entities=names,
                         weights=weights,
                         epsilon=epsilon,
@@ -127,7 +128,7 @@ def run_solver(
                             else:
                                 insert(output_e_entities, technique, solution)
                 elif technique[:3] == TEC_ICD:
-                    solution = solve_icd_bqp(
+                    solution = solve_icd_blp(
                         e_entities=e_dataset.names,
                         f_entities=f_dataset.names,
                         inter=set(inter),
@@ -145,7 +146,7 @@ def run_solver(
                         insert(output_f_entities, technique, solution[2])
                         # output_inter[technique], output_e_entities[technique], output_f_entities[technique] = solution
                 elif technique[:3] == TEC_CCS:
-                    cluster_split = solve_ccs_bqp(
+                    cluster_split = solve_ccs_blp(
                         clusters=dataset.cluster_names,
                         weights=[dataset.cluster_weights.get(c, 0) for c in dataset.cluster_names],
                         similarities=dataset.cluster_similarity,
@@ -176,7 +177,7 @@ def run_solver(
                         f_dataset.cluster_map,
                         f_dataset.cluster_names,
                     )
-                    cluster_split = solve_ccd_bqp(
+                    cluster_split = solve_ccd_blp(
                         e_clusters=e_dataset.cluster_names,
                         e_weights=[e_dataset.cluster_weights.get(c, 0) for c in e_dataset.cluster_names],
                         e_similarities=e_dataset.cluster_similarity,

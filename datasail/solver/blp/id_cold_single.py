@@ -39,8 +39,12 @@ def solve_ics_blp(
     o = [split * sum(weights) for split in splits]
     w = np.stack([weights] * len(splits))
     normalization = 1 / (len(splits) * sum(weights) * epsilon)
+    min_lim = [int((split - epsilon) * sum(weights)) for split in splits]
 
-    constraints = [cvxpy.sum(x, axis=1) == np.ones((len(entities)))]
+    constraints = [
+        cvxpy.sum(x, axis=1) == np.ones((len(entities))),
+        # min_lim <= cvxpy.sum(cvxpy.multiply(w.T, x), axis=0),
+    ]
     loss = cvxpy.sum(cvxpy.abs(cvxpy.sum(cvxpy.multiply(w.T, x), axis=0) - o)) * normalization
     problem = solve(loss, constraints, max_sec, solver, log_file)
 

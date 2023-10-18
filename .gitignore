@@ -16,7 +16,7 @@ issue_*
 main.py
 datasail/cluster/wlk_olga.py
 datasail/cluster/ecfp_amay.py
-experiments/
+experiments_local/
 tmp/
 log*.txt
 

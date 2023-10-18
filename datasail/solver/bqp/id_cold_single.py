@@ -34,6 +34,7 @@ def solve_ics_bqp(
     Returns:
         Mapping from entities to splits optimizing the objective function
     """
+    print("QUAD")
     m = np.ones((len(entities)))
     o = [split * sum(weights) for split in splits]
     w = np.stack([weights] * len(splits))
